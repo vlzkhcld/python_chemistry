@@ -1,1 +1,1 @@
-from .delta_strategies import FollowGradient
+from .delta_strategies import FollowGradient, Newton, RFO
