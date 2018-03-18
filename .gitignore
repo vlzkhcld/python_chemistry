@@ -3,3 +3,4 @@ tmp
 .idea
 __pycache__
 .ipynb_checkpoints
+path[0-9].txt
