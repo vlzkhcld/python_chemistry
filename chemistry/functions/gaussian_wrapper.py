@@ -27,8 +27,8 @@ class GaussianWrapper:
                                '# B3lyp/3-21g nosym {1}\n' \
                                '\n' \
                                '\n' \
-                               '0 1\n'
-
+                               '-1 1\n'
+#важно следить за мультиплетностью и зарядом
     MAGIC_CONSTANT = 1.88972585931612435672
 
     def __init__(self, n_proc, mem):
@@ -121,7 +121,7 @@ class Molecule(BaseFunction):
         return self.gaussian.value_grad_hess(self.charges, x)
 
 
-if __name__ == '__main__':
+"""if __name__ == '__main__':
     import time
     import concurrent.futures
 
@@ -144,4 +144,4 @@ if __name__ == '__main__':
             futures.append(executor.submit(runner_fn))
         for future in futures:
             future.result()
-    print(time.time() - start_time)
+    print(time.time() - start_time)"""
