@@ -26,7 +26,7 @@ class BaseFunction:
 
 class Sum(BaseFunction):
     def __init__(self, func1, func2):
-        super(Sum, self).__init__(func1.n_dims+func2.n_dims)
+        super(Sum, self).__init__(func1.n_dims)
         self.func1 = func1
         self.func2 = func2
 
@@ -40,10 +40,10 @@ class Sum(BaseFunction):
         return self.func1.hess(x) + self.func2.hess(x)
 
     def value_grad(self, x):
-        return self.func1.value_grad(x) + self.func2.value_grad(x)
+        return self.func1.value_grad(x)[0] + self.func2.value_grad(x)[0], self.func1.value_grad(x)[1] + self.func2.value_grad(x)[1]
 
     def value_grad_hess(self, x):
-        return self.func1.value_grad_hess(x) + self.func2.value_grad_hess(x)
+        return self.func1.value_grad_hess(x)[0] + self.func2.value_grad_hess(x)[0], self.func1.value_grad_hess(x)[1] + self.func2.value_grad_hess(x)[1], self.func1.value_grad_hess(x)[2] + self.func2.value_grad_hess(x)[2]
 
 
 class CoordTransformation(BaseFunction):
@@ -258,7 +258,7 @@ class PolarCoordsWithDirection(CoordTransformation):
         return first + second
 
 
-"""if __name__ == '__main__':
+if __name__ == '__main__':
     def test_function_grad(func, lower_bound, upper_bound, n_iters, delta=1e-4, eps=1e-3):
         for _ in range(n_iters):
             x = np.random.uniform(lower_bound, upper_bound)
@@ -306,4 +306,4 @@ class PolarCoordsWithDirection(CoordTransformation):
     func = AffineTransformation(func, np.random.randn(func.n_dims), np.random.randn(func.n_dims, func.n_dims))
     func = PolarCoordsWithDirection(func, .3, np.random.randn(func.n_dims))
     test_function_grad(func, -np.ones(func.n_dims), np.ones(func.n_dims), 10)
-    test_function_hess(func, -np.ones(func.n_dims), np.ones(func.n_dims), 10)"""
+    test_function_hess(func, -np.ones(func.n_dims), np.ones(func.n_dims), 10)

@@ -121,7 +121,7 @@ class Molecule(BaseFunction):
         return self.gaussian.value_grad_hess(self.charges, x)
 
 
-"""if __name__ == '__main__':
+if __name__ == '__main__':
     import time
     import concurrent.futures
 
@@ -144,4 +144,4 @@ class Molecule(BaseFunction):
             futures.append(executor.submit(runner_fn))
         for future in futures:
             future.result()
-    print(time.time() - start_time)"""
+    print(time.time() - start_time)

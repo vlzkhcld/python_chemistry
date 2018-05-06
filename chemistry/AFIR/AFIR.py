@@ -7,7 +7,7 @@ class AFIRfunction(BaseFunction):
         super(AFIRfunction, self).__init__(len(radii) * 3)
         self.radii = radii
         self.center = center
-        self.alpha = 3.808799*10**(-7)*rho * gamma / (2 ** (1 / 6) - (1 + (1 + gamma / 1.0061) ** (1 / 2)) ** (1 / 6)) / 3.8164
+        self.alpha = -0.00229371*rho * gamma / (2 ** (1 / 6) - (1 + (1 + gamma / 1.0061) ** (1 / 2)) ** (1 / 6)) / 3.8164
         self.p = p
 
     def __call__(self, x):
@@ -18,9 +18,9 @@ class AFIRfunction(BaseFunction):
                 sum1 += (self.radii[i] + self.radii[j]) ** self.p / (
                         (x[3 * i] - x[3 * j]) ** 2 + (x[3 * i + 1] - x[3 * j + 1]) ** 2 + (
                         x[3 * i + 2] - x[3 * j + 2]) ** 2) ** ((self.p - 1) / 2)
-                sum2 += (self.radii[i] + self.radii[j]) / (
+                sum2 += ((self.radii[i] + self.radii[j]) / (
                         (x[3 * i] - x[3 * j]) ** 2 + (x[3 * i + 1] - x[3 * j + 1]) ** 2 + (
-                        x[3 * i + 2] - x[3 * j + 2]) ** 2) ** (1 / 2) ** self.p
+                        x[3 * i + 2] - x[3 * j + 2]) ** 2) ** (1 / 2)) ** self.p
         return self.alpha * sum1 / sum2
 
     def value_grad(self, x):
@@ -31,9 +31,9 @@ class AFIRfunction(BaseFunction):
                 sum1 += (self.radii[i] + self.radii[j]) ** self.p / (
                         (x[3 * i] - x[3 * j]) ** 2 + (x[3 * i + 1] - x[3 * j + 1]) ** 2 + (
                         x[3 * i + 2] - x[3 * j + 2]) ** 2) ** ((self.p - 1) / 2)
-                sum2 += (self.radii[i] + self.radii[j]) / (
+                sum2 += ((self.radii[i] + self.radii[j]) / (
                         (x[3 * i] - x[3 * j]) ** 2 + (x[3 * i + 1] - x[3 * j + 1]) ** 2 + (
-                        x[3 * i + 2] - x[3 * j + 2]) ** 2) ** (1 / 2) ** self.p
+                        x[3 * i + 2] - x[3 * j + 2]) ** 2) ** (1 / 2)) ** self.p
         value = self.alpha * sum1 / sum2
         grad = np.zeros(self.n_dims)
         for k in range(self.n_dims // 3):
@@ -103,9 +103,9 @@ class AFIRfunction(BaseFunction):
                 sum1 += (self.radii[i] + self.radii[j]) ** self.p / (
                         (x[3 * i] - x[3 * j]) ** 2 + (x[3 * i + 1] - x[3 * j + 1]) ** 2 + (
                         x[3 * i + 2] - x[3 * j + 2]) ** 2) ** ((self.p - 1) / 2)
-                sum2 += (self.radii[i] + self.radii[j]) / (
+                sum2 += ((self.radii[i] + self.radii[j]) / (
                         (x[3 * i] - x[3 * j]) ** 2 + (x[3 * i + 1] - x[3 * j + 1]) ** 2 + (
-                        x[3 * i + 2] - x[3 * j + 2]) ** 2) ** (1 / 2) ** self.p
+                        x[3 * i + 2] - x[3 * j + 2]) ** 2) ** (1 / 2)) ** self.p
         value = self.alpha * sum1 / sum2
         grad = np.zeros(self.n_dims)
         hess = np.zeros([self.n_dims, self.n_dims])

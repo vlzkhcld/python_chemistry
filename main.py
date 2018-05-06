@@ -5,45 +5,62 @@ from chemistry import *
 from chemistry.functions import GaussianWrapper, Molecule, Sum
 from chemistry.optimization import GradientDescent, delta_strategies, stop_strategies
 from chemistry.AFIR.AFIR import AFIRfunction
+from chemistry.AFIR.afir_gradient_descent import AFIRGradientDescent
+from chemistry.AFIR.start_geom import start_geometries, chek_geometry
 
 
-optimizer = GradientDescent(delta_strategies.FollowGradient(), stop_strategies.GradNorm(1e-5))
+AFIRoptimizer = AFIRGradientDescent(delta_strategies.FollowGradient(0.1), stop_strategies.GradNorm(7e-3))
 
+optimizer = GradientDescent(delta_strategies.FollowGradient(0.1), stop_strategies.GradNorm(7e-3))
+
+reagent1 = np.array([-3.218811131,  0.287491311,  -4.755094764,
+    -4.270658131,  0.318702311,  -4.432272764,
+    -2.783629131,  -0.648620689,  -4.398591764,
+    -2.685251131,  1.118249311,  -4.268558764,
+    -3.060046131,  0.269853311,  -6.205462764,
+    -3.451847131,  1.115719311,  -6.553595764])
+
+base_atoms1 = [[0, 1.52], [4, 1.7]]
+
+reagent2 = np.array([-3.474199523,  0.191450334,  -1.76752838])
+
+base_atoms2 = [[0, 1.47]]
 
 charges = [6, 1, 1, 1, 8, 1, 9]
-eq = np.array([-3.245201265,      0.277567077,     -4.446379571,
-               -4.297048265,      0.308778077,     -4.123557571,
-               -2.810019265,     -0.658544923,     -4.089876571,
-               -2.711641265,      1.108325077,     -3.959843571,
-               -3.086436265,      0.259929077,     -5.896747571,
-               -3.478000000,      1.106000000,    -6.245000000,
-               -4.572820000,      3.468910000,    -7.217470000])
+
+radii = [0.76, 0.31, 0.31, 0.31, 0.66, 0.31, 0.57]
+
 center = 6
-radii = np.array([0.76, 0.31, 0.31, 0.31, 0.66, 0.31, 0.57])
+
+molecule = Molecule(charges, 2, 4100)
+
+
+starters = start_geometries(reagent1, reagent2, base_atoms1, base_atoms2)
+
+gammas = [100]
+
 
 i = 0
-for gamma in [50000]:
-    func = Sum(AFIRfunction(radii, center, gamma), functions.Molecule(charges, 4, 2000))
-    path = open('path'+str(i)+'.txt', 'w')
-    path.write("gamma="+str(gamma) + '\n')
-    done = optimizer(func, eq, path)
+summary = open('summary.txt', 'w')
+for start in starters:
+    for gamma in gammas:
+        func = Sum(molecule, AFIRfunction(radii, center, gamma))
+        energy = open(str(i)+'g'+str(gamma)+'energy.txt', 'w')
+        path = open(str(i)+'g'+str(gamma)+'path.xyz', 'w')
+        energy.write("gamma="+str(gamma) + '\n')
+        stop = AFIRoptimizer(func, start, path, energy)
+        path.close()
+        energy.close()
+
+        optimiz_min = open(str(i)+'g'+str(gamma)+'optimiz_min.xyz', 'w')
+        optimiz_en = open(str(i)+'g'+str(gamma)+'optimiz_en.txt', 'w')
+        end = optimizer(molecule, stop, optimiz_min, optimiz_en)
+        optimiz_min.close()
+        optimiz_en.close()
+        readoptimiz_en = open(str(i) + 'g' + str(gamma) + 'optimiz_en.txt', 'r')
+        lines = readoptimiz_en.readlines()
+        last = lines[len(lines)-1]
+        summary.write(str(i) + 'g' + str(gamma)+' min ' + last)
+        readoptimiz_en.close()
     i += 1
-    path.close()
-
-"""molecule = functions.Molecule([1, 1, 8], 3, 750)
-optimizer = GradientDescent(delta_strategies.FollowGradient(), stop_strategies.GradNorm(1e-5))
-path = optimizer(molecule, eq)
-
-print(utils.io.to_chemcraft_format(charges, eq))
-
-eq = path[-1]
-molecule.grad(eq)
-
-molecule = functions.Molecule([1, 1, 8], 3, 750)
-transformed = utils.linalg.get_motionless_basis(molecule, eq)
-
-print(molecule.hess(eq))
-print()
-
-print(utils.linalg.calc_singular_values(molecule.hess(eq)))
-print(utils.linalg.calc_singular_values(transformed.hess(np.zeros(transformed.n_dims))))"""
+summary.close()
