@@ -38,7 +38,7 @@ molecule = Molecule(charges, 2, 4100)
 
 starters = start_geometries(reagent1, reagent2, base_atoms1, base_atoms2)
 
-gammas = [50, 100, 150]
+gammas = [200, 250]
 
 print(starters)
 
