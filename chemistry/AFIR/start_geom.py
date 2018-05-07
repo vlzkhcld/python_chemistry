@@ -4,7 +4,7 @@ import numpy as np
 def chek_geometry(start, center):
     for i in range(center):
         for j in range(center, len(start) // 3):
-            if (start[i]-start[j])**2 + (start[i+1]-start[j+1])**2 + (start[i+2]-start[j+2])**2 < 4:
+            if (start[3*i]-start[3*j])**2 + (start[3*i+1]-start[3*j+1])**2 + (start[3*i+2]-start[3*j+2])**2 < 4:
                 return False
     return True
 
@@ -23,7 +23,7 @@ def start_geometries(reagent1, reagent2, base_atoms1, base_atoms2):
                     if k % 3 == p % 3 and p >= 3:
                         dist -= lendist
                     new_reagent2[k] = reagent2[k] - reagent2[3 * j[0] + (k % 3)] + reagent1[3 * i[0] + (k % 3)] + dist
-                if chek_geometry(np.append(reagent1, new_reagent2), len(reagent1)):
+                if chek_geometry(np.append(reagent1, new_reagent2), len(reagent1) // 3):
                         starters.append(np.append(reagent1, new_reagent2))
     return starters
 

@@ -32,7 +32,7 @@ class AFIRGradientDescent:
             energy.write("step=" + str(itr) + '\n' + "norm.grad=" + str(np.linalg.norm(grad)) + '\n' +
                          'norm.AFIR.grad=' + str(np.linalg.norm(AFIRgrad)) + '\n' + "energy=" + str(
                 val - AFIRval) + '\n' +
-                         "AFIRenergy=" + str(AFIRval) + '\n')
+                         "AFIRenergy=" + str(AFIRval) + '\n'+'\n')
 
             path.write(str(func.n_dims // 3) + '\n' + str(itr) + '\n')
             for j in range(func.n_dims // 3):
