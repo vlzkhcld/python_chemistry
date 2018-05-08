@@ -40,7 +40,6 @@ starters = start_geometries(reagent1, reagent2, base_atoms1, base_atoms2)
 
 gammas = [200, 250]
 
-print(starters)
 
 i = 0
 summary = open('summary.txt', 'w')
