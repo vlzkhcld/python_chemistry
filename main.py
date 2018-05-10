@@ -20,12 +20,12 @@ reagent1 = np.array([-0.664704000,     -0.007633000,      0.000000000,
         1.238637000,      0.914145000,      0.000000000,
         1.238637000,     -0.929411000,      0.000000000])
 
-base_atoms1 = [[1, 1.2], [0, 1.7]]
+base_atoms1 = [[1, 1.7]]
 
-reagent2 = np.array([-1.098126620,     -0.472534088,     -0.128990679,
-                     -1.369412000,     -0.798222000,     -0.743091000])
+reagent2 = np.array([0.0,     0.0,      0.373,
+                    0.0,     0.0,     -0.373])
 
-base_atoms2 = [[0, 1.2]]
+base_atoms2 = [[1, 1.2]]
 
 charges = [6, 1, 1, 6, 1, 1, 1, 1]
 
@@ -38,7 +38,16 @@ molecule = Molecule(charges, 2, 4100)
 
 starters = start_geometries(reagent1, reagent2, base_atoms1, base_atoms2)
 
-gammas = [200, 250]
+"""starters = [np.array([-0.664704000,     -0.007633000,      0.000000000,
+       -1.238637000,      0.914145000,      0.000000000,
+       -1.238637000,     -0.929411000,      0.000000000,
+        0.664704000,     -0.007633000,      0.000000000,
+        1.238637000,      0.914145000,      0.000000000,
+        1.238637000,     -0.929411000,      0.000000000,
+                      0.143825751, - 0.098833329,      1.837282182,
+                       - 0.598881627, - 0.096506366,      1.769002515])]"""
+
+gammas = [1000, 1250]
 
 
 i = 0
@@ -61,7 +70,7 @@ for start in starters:
         optimiz_en.close()
         readoptimiz_en = open(str(i) + 'g' + str(gamma) + 'optimiz_en.txt', 'r')
         lines = readoptimiz_en.readlines()
-        last = lines[len(lines)-1]
+        last = lines[len(lines)-2]
         summary.write(' min ' + last + '\n')
         readoptimiz_en.close()
     i += 1
