@@ -17,6 +17,7 @@ class AFIRGradientDescent:
         while True:
 
             val, grad = func.func1.value_grad(x)
+            #val, grad = 0, 0
             AFIRval, AFIRgrad = func.func2.value_grad(x)
 
             if val > maxval:
@@ -34,7 +35,7 @@ class AFIRGradientDescent:
                 val - AFIRval) + '\n' +
                          "AFIRenergy=" + str(AFIRval) + '\n'+'\n')
 
-            path.write(str(func.n_dims // 3) + '\n' + str(itr) + '\n')
+            path.write(str(func.n_dims // 3) + '\n' + 'afir' + str(itr) + '\n')
             for j in range(func.n_dims // 3):
                 path.write(str(func.func1.charges[j]) + '    ' + str(x[3 * j]) + '  ' + str(x[3 * j + 1]) + '  ' + str(
                     x[3 * j + 2]) + '\n')

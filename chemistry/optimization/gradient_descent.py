@@ -14,7 +14,7 @@ class GradientDescent:
         while True:
             val, grad = func.value_grad(x)
 
-            path.write(str(func.n_dims // 3) + '\n' + str(itr) + '\n')
+            path.write(str(func.n_dims // 3) + '\n' + 'opt' + str(itr) + '\n')
             for j in range(func.n_dims // 3):
                 path.write(str(func.charges[j]) + '    ' + str(x[3 * j]) + '  ' + str(x[3 * j + 1]) + '  ' + str(
                     x[3 * j + 2]) + '\n')
@@ -22,7 +22,7 @@ class GradientDescent:
             energy.write("step=" + str(itr) + '\n'+"norm.grad="+str(np.linalg.norm(grad))+'\n'+"energy="+str(val)+'\n'+'\n')
 
             delta = self.delta_strategy(itr=iter, x=x, val=val, grad=grad)
-            if self.stop_strategy(itr=iter, x=x, val=val, grad=grad, delta=delta) or (itr > 200):
+            if self.stop_strategy(itr=iter, x=x, val=val, grad=grad, delta=delta) or (itr > 50):
                 return x
             x += delta
 

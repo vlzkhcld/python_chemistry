@@ -13,7 +13,7 @@ AFIRoptimizer = AFIRGradientDescent(delta_strategies.FollowGradient(0.1), stop_s
 
 optimizer = GradientDescent(delta_strategies.FollowGradient(0.1), stop_strategies.GradNorm(7e-3))
 
-reagent1 = np.array([-0.664704000,     -0.007633000,      0.000000000,
+'''reagent1 = np.array([-0.664704000,     -0.007633000,      0.000000000,
        -1.238637000,      0.914145000,      0.000000000,
        -1.238637000,     -0.929411000,      0.000000000,
         0.664704000,     -0.007633000,      0.000000000,
@@ -31,21 +31,29 @@ charges = [6, 1, 1, 6, 1, 1, 1, 1]
 
 radii = [0.66, 0.31, 0.31, 0.66, 0.31, 0.31, 0.31, 0.31]
 
-center = 6
+center = 6'''
 
-"""reagent1 = np.array([-0.664704000,     -0.007633000,      0.000000000
-       -1.238637000,      0.914145000,      0.000000000,
-       -1.238637000,     -0.929411000,      0.000000000,
-        0.664704000,     -0.007633000,      0.000000000,
-        1.238637000,      0.914145000,      0.000000000,
-        1.238637000,     -0.929411000,      0.000000000])
+reagent1 = np.array([-0.664704000,     -0.007633000,      0.000000000,
+                    -1.238637000,      0.914145000,      0.000000000,
+                    -1.238637000,     -0.929411000,      0.000000000,
+                    0.664704000,     -0.007633000,      0.000000000,
+                    1.238637000,      0.914145000,      0.000000000,
+                    1.238637000,     -0.929411000,      0.000000000])
 
-reaget2 = np.array([0.0, 0.0, 0.0,
+reagent2 = np.array([0.0, 0.0, 0.0,
                     1.08196, 0.0, 0.0,
                     -0.54098, 0.937, 0.0,
                     -0.54098, -0.937, 0.0])
 
-charges = [6, 1, 1, 6, 1, 1, 6, 1, 1, 1]"""
+charges = [6, 1, 1, 6, 1, 1, 6, 1, 1, 1]
+
+base_atoms1 = [[0, 1.7]]
+
+base_atoms2 = [[0, 1.7]]
+
+center = 6
+
+radii = [0.66, 0.31, 0.31, 0.66, 0.31, 0.31, 0.66, 0.31, 0.31, 0.31]
 
 molecule = Molecule(charges, 2, 4100)
 
@@ -68,7 +76,7 @@ for start in starters:
         path.close()
         energy.close()
 
-        optimiz_min = open(str(i)+'g'+str(gamma)+'optimiz_min.xyz', 'w')
+        optimiz_min = open(str(i)+'g'+str(gamma)+'path.xyz', 'a')
         optimiz_en = open(str(i)+'g'+str(gamma)+'optimiz_en.txt', 'w')
         end = optimizer(molecule, stop, optimiz_min, optimiz_en)
         optimiz_min.close()

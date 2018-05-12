@@ -18,12 +18,16 @@ def start_geometries(reagent1, reagent2, base_atoms1, base_atoms2):
             turned_r2[i] = reagent2[i+2]
         if i % 3 == 2:
             turned_r2[i] = -reagent2[i-2]
+        if i % 3 == 1:
+            turned_r2[i] = reagent2[i]
     tturned_r2 = np.zeros(len(reagent2))
     for i in range(len(tturned_r2)):
         if i % 3 == 1:
             tturned_r2[i] = reagent2[i+1]
         if i % 3 == 2:
             tturned_r2[i] = -reagent2[i-1]
+        if i % 3 == 0:
+            tturned_r2[i] = reagent2[i]
     for x in [turned_r2, tturned_r2, reagent2]:
         for i in base_atoms1:
             for j in base_atoms2:
