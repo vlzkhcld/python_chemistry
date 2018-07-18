@@ -27,13 +27,15 @@ class GaussianWrapper:
                                '# B3lyp/3-21g nosym {1}\n' \
                                '\n' \
                                '\n' \
-                               '0 2\n'
+                               '{4} {5}\n'
 #важно следить за мультиплетностью и зарядом
     MAGIC_CONSTANT = 1.88972585931612435672
 
-    def __init__(self, n_proc, mem):
+    def __init__(self, n_proc, mem, charge, multiplicity):
         self.n_proc = n_proc
         self.mem = mem
+        self.charge = charge
+        self.multiplicity = multiplicity
 
     def __call__(self, charges, x):
         return self._run_gaussian_and_parse_values(charges, x, self.SCF_METHOD, [self._parse_value])[0]
@@ -56,7 +58,8 @@ class GaussianWrapper:
         folder.mkdir(parents=True, exist_ok=True)
 
         with (folder / 'input').open('w') as f:
-            f.write(self.GAUSSIAN_HEADER_TEMPLATE.format(folder, method, self.n_proc, self.mem))
+            f.write(self.GAUSSIAN_HEADER_TEMPLATE.format(folder, method, self.n_proc, self.mem, self.charge,
+                                                         self.multiplicity))
             for i, charge in enumerate(charges):
                 f.write('{}\t{:.30f}\t{:.30f}\t{:.30f}\n'.format(charge, *x[i * 3: i * 3 + 3]))
             f.write('\n')
@@ -106,10 +109,10 @@ class GaussianWrapper:
 
 
 class Molecule(BaseFunction):
-    def __init__(self, charges, n_proc=3, mem=750):
+    def __init__(self, charges, charge=0, multiplicity=1, n_proc=3, mem=750):
         super(Molecule, self).__init__(len(charges) * 3)
         self.charges = charges
-        self.gaussian = GaussianWrapper(n_proc, mem)
+        self.gaussian = GaussianWrapper(n_proc, mem, charge, multiplicity)
 
     def __call__(self, x):
         return self.gaussian(self.charges, x)

@@ -7,84 +7,91 @@ from chemistry.optimization import GradientDescent, delta_strategies, stop_strat
 from chemistry.AFIR.AFIR import AFIRfunction
 from chemistry.AFIR.afir_gradient_descent import AFIRGradientDescent
 from chemistry.AFIR.start_geom import start_geometries, chek_geometry
+from chemistry.AFIR.afir_input import afir_input
+from chemistry.AFIR.second_optimization import second_optimization
+from chemistry.AFIR.creat_file import creat_energy_file, creat_path_file, creat_afir_energy_file
 
 
-AFIRoptimizer = AFIRGradientDescent(delta_strategies.FollowGradient(0.1), stop_strategies.GradNorm(7e-3))
+# input
+file1 = open('reagent1.xyz', 'r')
+file2 = open('reagent2.xyz', 'r')
+print('Enter full charge')
+charge = int(input())
+print('Enter full multiplicity')
+multiplicity = int(input())
+print('Enter gamma(s)')
+inputgammas = input()
+print('Enter base atom(s) of reagent 1')
+inputbaseatoms1 = input()
+print('Enter base atom(s) of reagent 2')
+inputbaseatoms2 = input()
+reagent1, reagent2, charges, radii, center, base_atoms1, base_atoms2, gammas = afir_input(file1, file2, inputgammas,
+                                                                                          inputbaseatoms1,
+                                                                                          inputbaseatoms2)
+file1.close()
+file2.close()
 
-optimizer = GradientDescent(delta_strategies.FollowGradient(0.1), stop_strategies.GradNorm(7e-3))
+# minimization strategy for molecules + AFIR
+AFIRoptimizer = AFIRGradientDescent(delta_strategies.FollowGradient(0.2), stop_strategies.GradNorm(7e-3))
 
-'''reagent1 = np.array([-0.664704000,     -0.007633000,      0.000000000,
-       -1.238637000,      0.914145000,      0.000000000,
-       -1.238637000,     -0.929411000,      0.000000000,
-        0.664704000,     -0.007633000,      0.000000000,
-        1.238637000,      0.914145000,      0.000000000,
-        1.238637000,     -0.929411000,      0.000000000])
+# minimization strategy for molecules
+optimizer = GradientDescent(delta_strategies.FollowGradient(0.2), stop_strategies.GradNorm(7e-3))
 
-base_atoms1 = [[0, 1.7]]
-
-reagent2 = np.array([0.0,     0.0,      0.373,
-                    0.0,     0.0,     -0.373])
-
-base_atoms2 = [[1, 1.2]]
-
-charges = [6, 1, 1, 6, 1, 1, 1, 1]
-
-radii = [0.66, 0.31, 0.31, 0.66, 0.31, 0.31, 0.31, 0.31]
-
-center = 6'''
-
-reagent1 = np.array([-0.664704000,     -0.007633000,      0.000000000,
-                    -1.238637000,      0.914145000,      0.000000000,
-                    -1.238637000,     -0.929411000,      0.000000000,
-                    0.664704000,     -0.007633000,      0.000000000,
-                    1.238637000,      0.914145000,      0.000000000,
-                    1.238637000,     -0.929411000,      0.000000000])
-
-reagent2 = np.array([0.0, 0.0, 0.0,
-                    1.08196, 0.0, 0.0,
-                    -0.54098, 0.937, 0.0,
-                    -0.54098, -0.937, 0.0])
-
-charges = [6, 1, 1, 6, 1, 1, 6, 1, 1, 1]
-
-base_atoms1 = [[0, 1.7]]
-
-base_atoms2 = [[0, 1.7]]
-
-center = 6
-
-radii = [0.66, 0.31, 0.31, 0.66, 0.31, 0.31, 0.66, 0.31, 0.31, 0.31]
-
-molecule = Molecule(charges, 2, 4100)
+# gaussian wrapper
+molecule = Molecule(charges, charge, multiplicity, 2, 4100)
 
 
-starters = start_geometries(reagent1, reagent2, base_atoms1, base_atoms2)
+print('Do you want to rotate reagent2 in start geometries generation?(1/2/3/4)')
+rotation = int(input())
 
-gammas = [1250]
+# creation start geometries
+starters = start_geometries(reagent1, reagent2, base_atoms1, base_atoms2, charges, center, rotation)
 
-
+# creations AFIR paths
 i = 0
 summary = open('summary.txt', 'w')
 for start in starters:
     for gamma in gammas:
         summary.write(str(i) + 'g' + str(gamma) + '\n' + 'start energy' + str(molecule(start)) + '\n')
         func = Sum(molecule, AFIRfunction(radii, center, gamma))
-        energy = open(str(i)+'g'+str(gamma)+'energy.txt', 'w')
-        path = open(str(i)+'g'+str(gamma)+'path.xyz', 'w')
-        energy.write("gamma="+str(gamma) + '\n')
-        stop = AFIRoptimizer(func, start, path, energy)
-        path.close()
-        energy.close()
 
-        optimiz_min = open(str(i)+'g'+str(gamma)+'path.xyz', 'a')
-        optimiz_en = open(str(i)+'g'+str(gamma)+'optimiz_en.txt', 'w')
-        end = optimizer(molecule, stop, optimiz_min, optimiz_en)
-        optimiz_min.close()
-        optimiz_en.close()
-        readoptimiz_en = open(str(i) + 'g' + str(gamma) + 'optimiz_en.txt', 'r')
+        path, energy = AFIRoptimizer(func, start, 30)
+        file_energy = open(str(i)+'g'+str(gamma)+'energy.txt', 'w')
+        file_path = open(str(i)+'g'+str(gamma)+'path.xyz', 'w')
+        file_energy.write("gamma="+str(gamma) + '\n')
+        creat_afir_energy_file(energy, file_energy)
+        creat_path_file(path, charges, file_path, 'afir')
+        file_path.close()
+        file_energy.close()
+
+        optimiz_path, optimiz_en = optimizer(molecule, path[-1], 10)
+        file_optimiz_path = open(str(i)+'g'+str(gamma)+'path.xyz', 'a')
+        file_optimiz_en = open(str(i)+'g'+str(gamma)+'energy.txt', 'a')
+        creat_path_file(optimiz_path, charges, file_optimiz_path)
+        creat_energy_file(optimiz_en, file_optimiz_en)
+        file_optimiz_path.close()
+        file_optimiz_en.close()
+        readoptimiz_en = open(str(i) + 'g' + str(gamma) + 'energy.txt', 'r')
         lines = readoptimiz_en.readlines()
         last = lines[len(lines)-2]
         summary.write(' min ' + last + '\n')
         readoptimiz_en.close()
     i += 1
 summary.close()
+
+# optimization AFIR path
+answer = ' '
+while answer != 'y' and answer != 'n':
+    print('Do you want to star optimization AFIR paths?(y/n)')
+    answer = input()
+
+while answer == 'y':
+    print('Enter number of path')
+    num = input()
+    print('Enter gamma of path')
+    g = input()
+    print('Enter number of steps of second optimization')
+    steps = int(input())
+    second_optimization(num, g, steps, molecule)
+    print('Do you want to continue?(y/n)')
+    answer = input()
