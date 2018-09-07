@@ -15,7 +15,7 @@ def chek_geometry(start, center):
     return True
 
 
-def start_geometries(reagent1, reagent2, base_atoms1, base_atoms2, charges, center, rotation):
+def start_geometries(reagent1, reagent2, base_atoms1, base_atoms2, charges, center):
     starters = []
     turned1_r2 = np.zeros(len(reagent2))
     for i in range(len(turned1_r2)):
@@ -42,7 +42,7 @@ def start_geometries(reagent1, reagent2, base_atoms1, base_atoms2, charges, cent
         if i % 3 == 2:
             turned3_r2[i] = reagent2[i]
 
-    for x in [reagent2, turned1_r2, turned2_r2, turned3_r2][0:rotation]:
+    for x in [reagent2, turned1_r2, turned2_r2, turned3_r2]:
         for i in base_atoms1:
             for j in base_atoms2:
                 lendist = (allvdwradii[charges[j+center]]/100+allvdwradii[charges[i]]/100)*0.8

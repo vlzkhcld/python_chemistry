@@ -3,9 +3,9 @@ import numpy as np
 from chemistry.optimization import GradientDescent, delta_strategies, stop_strategies
 from chemistry.AFIR.path import Path
 from chemistry.AFIR.creat_file import creat_energy_file, creat_path_file
-from chemistry.functions import GaussianWrapper, Molecule
 
-def second_optimization(num, g, optsteps, molecule):
+
+def optimization(num, g, optsteps, molecule):
 
     charges = molecule.charges
     n_proc = molecule.gaussian.n_proc
@@ -13,7 +13,7 @@ def second_optimization(num, g, optsteps, molecule):
     charge = molecule.gaussian.charge
     multiplicity = molecule.gaussian.multiplicity
 
-    in_path = open(num+'g'+g+'path.xyz', 'r')
+    in_path = open('../../AFIR paths/'+num+'g'+g+'path.xyz', 'r')
     pathlines = in_path.readlines()
     in_path.close()
 
