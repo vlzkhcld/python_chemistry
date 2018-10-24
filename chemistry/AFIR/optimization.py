@@ -12,7 +12,8 @@ def optimization(num, g, optsteps, molecule):
     mem = molecule.gaussian.mem
     charge = molecule.gaussian.charge
     multiplicity = molecule.gaussian.multiplicity
-
+    
+    #reading AFIR path, that will be optimized, from file
     in_path = open('../../AFIR paths/'+num+'g'+g+'path.xyz', 'r')
     pathlines = in_path.readlines()
     in_path.close()
@@ -30,17 +31,20 @@ def optimization(num, g, optsteps, molecule):
         path.append(dot)
 
     fastoptimizer = GradientDescent(delta_strategies.FollowGradient(0.2 ), stop_strategies.GradNorm(7e-3))
-
+    
+    # the first point(of the path) optimization
     startpath, start_en = fastoptimizer(molecule, path[0], 10)
 
     for dot in startpath[1:]:
         path.insert(0, dot)
-
+    
+    # the last point(of the path) optimization
     endpath, end_en = fastoptimizer(molecule, path[-1], 30)
 
     for dot in endpath[1:]:
         path.append(dot)
-
+    
+    # path length calculation
     lenth = 0
     lenthes = []
 
@@ -48,7 +52,8 @@ def optimization(num, g, optsteps, molecule):
         dist = np.linalg.norm(path[j+1] - path[j])
         lenthes.append(dist)
         lenth +=dist
-
+    
+    # thinning the path
     shortpath = [path[0]]
 
     dist = 0
@@ -58,21 +63,25 @@ def optimization(num, g, optsteps, molecule):
             shortpath.append(path[i+1])
             dist = 0
     shortpath.append(path[-1])
-
+    
+    # setting path parameters
     molecule_path = Path(charges, charge, multiplicity, n_proc, mem)
-
+    
+    # path from which optimization started
     pathcoord = []
 
     for x in shortpath:
         for y in x:
             pathcoord.append(y)
-
+    
+    # optimization
     optimizer = GradientDescent(delta_strategies.FollowGradient(0.2), stop_strategies.GradNorm(7e-3))
 
     pathofpath, enofpath = optimizer(molecule_path, np.array(pathcoord), optsteps)
 
     goodpathofpath = []
-
+    
+    # creation a list a pathes
     for x in pathofpath:
         goodpath = []
         itr = 0
@@ -87,7 +96,8 @@ def optimization(num, g, optsteps, molecule):
                 itr = 1
         goodpath.append(np.array(dot))
         goodpathofpath.append(goodpath)
-
+    
+    # writing in files
     finalen = open(num + 'g' + g + 'final_paths_energies.txt', 'w')
     creat_energy_file(enofpath, finalen)
     finalen.close()
